@@ -1,3 +1,4 @@
+from genericpath import exists
 import urllib.request
 
 class RockstarApi():
@@ -6,30 +7,69 @@ class RockstarApi():
         pass
 
     def getRock(self, id):
-        url = self.url+"rock/"+str(id)
-        contents = urllib.request.urlopen(url).read()
-        print (contents)
+        return Rock(self.url, id)
+
+
+class Rock():
+    cache   = None
+    stringParse = None
+    flatten = True
+    def __init__(self, url, id):
+        self.url = url+"rock/"+str(id)
+        self.load()
+
+    def load(self):
+        self.contents = urllib.request.urlopen(self.url).read()
+        print (self.contents)
+
         #de-json it into dictionary
+        #parse strings to numbers, or filter out
+        #print out the keys of log
 
-        #print out the keys of log 
-        return  # log with output as a entry in it.
+        #cache the log with output as a entry in it.
+        self.cache = {} #stuff
 
-    def getPRock(self, id, base=None, flatten=False):
-        values = self.getRock(id)
-        #filter the values so its only numbers
-        #map to patterns
-        patterns = {}
+    def _get(self, key):
+        if self.cache == None:
+            self.load()
+        if self.cache != None and key in self.cache:
+            return self.cache[key]
+        return None
+
+    def P(self, key):
+        value = self._get(key)
+        return value
+
+    def values(self):
+        if self.cache == None:
+            self.load()
+        return self.cache
+
+    def P(self, key):
+        values = self.get(key)
+        pattern = []
+        # if self.flatten
+            # flatten
+        # map to pattern
+        return pattern
+
+
+    def PBase(self, key):
+        values = self.get(key)
+        patterns = []
+        # Pbase the numbers
+        # if self.flatten
+            # flatten
+        # map to patterns
         return patterns
 
 rs = RockstarApi() # can take url default is "https://rockstarapi-production.up.railway.app/"
 rock=rs.getRock(0) # calls  https://rockstarapi-production.up.railway.app/rock/0 
 
-assert rs.getRock(0) == {"papa":[175,1533],"x":[2],"my_array":[{"0":"foo"},{"0":"foo","1":"bar"},{"0":"foo","1":"bar","2":"baz"},{"0":"foo","1":"bar","2":"baz","key":"value"}], "output":["Hello World",2,"foo","bar","baz","value",3]}
+assert rock.contents == {"papa":[175,1533],"x":[2],"my_array":[{"0":"foo"},{"0":"foo","1":"bar"},{"0":"foo","1":"bar","2":"baz"},{"0":"foo","1":"bar","2":"baz","key":"value"}], "output":["Hello World",2,"foo","bar","baz","value",3]}
+assert rock.values() == {"papa":[175,1533],"x":[2],"my_array":[[3],[3,3],[3,3,3],[3,3,3,5]], "output":[55,2,3,3,3,5,3]}
 
-assert rs.getPRock(0) ==  {"papa":P([175,1533]),"x":P([2]),"my_array":P([]), "output":P([2 , 3])}
 
-#Not sure whether to go with every pattern as a pattern
-assert rs.getPRock(0, base=10) ==                 {"papa":P([P([1,7,5]),P([1,5,3,3])]),"x":P(P([2])),"my_array":P([]), "output":P[P([2]) , P([3])]}
-assert rs.getPRock(0, base=10, flatten=False) ==  {"papa":P([P([1,7,5]),P([1,5,3,3])]),"x":P(P([2])),"my_array":P([]), "output":P[P([2]) , P([3])]}
-#or flatten them??
-assert rs.getPRock(0, base=10, flatten=True) ==  {"papa":P([1,7,5,1,5,3,3]),"x":P([2]),"my_array":P([]), "output":P([2,3])}
+assert rock.get("papa") ==  [175,1533]
+assert rock.P("papa") ==  P([175,1533])
+assert rock.PBase("papa", 10) == P([1,7,5,1,5,3,3])
