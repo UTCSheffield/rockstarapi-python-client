@@ -3,8 +3,9 @@ import json
 import requests
 
 class RockstarApi():
-    FILTER = 0
-    ROCKSTAR =1
+    IGNORE      = 0
+    FILTER      = 1
+    ROCKSTAR    = 2
 
     def __init__(self, url = "https://rockstarapi-production.up.railway.app/"):
         self.url = url
@@ -22,6 +23,18 @@ class Rock():
         self.url = url+"rock/"+str(id)
         self.load()
 
+    def parseOrFilter(self, item):
+        if self.stringParse == RockstarApi.FILTER:
+            filtered = item
+            return filtered
+        
+        if self.stringParse == RockstarApi.ROCKSTAR:
+            parsed = item
+            return parsed
+        
+        ##RockstarApi.IGNORE:
+        return item
+
     def load(self):
         #contents = urllib.request.urlopen(self.url).read()
         contents = requests.get(self.url).json()
@@ -30,7 +43,7 @@ class Rock():
         self.cache = {} #stuff
 
 
-        print("self.contents['log']", self.contents['log'])
+        #print("self.contents['log']", self.contents['log'])
         #cache the log 
         
         for key in self.contents['log']:
@@ -38,10 +51,11 @@ class Rock():
             #print out the keys and contents of log
             print(key, item)
             #parse strings to numbers, or filter out
-                    
-        # with output as a entry in it.
-        self.cache['output'] = self.contents['output']
+            self.cache[key] = self.parseOrFilter(self.contents['log'][key])
 
+        # with output as a entry in it.
+        self.cache['output'] = self.parseOrFilter(self.contents['output'])
+        print("self.cache",self.cache)
 
     def _get(self, key):
         if self.cache == None:
