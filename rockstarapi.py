@@ -31,14 +31,18 @@ class Rock():
 
 
         print("self.contents['log']", self.contents['log'])
-        #parse strings to numbers, or filter out
+        #cache the log 
+        
         for key in self.contents['log']:
             item = self.contents['log'][key]
+            #print out the keys and contents of log
             print(key, item)
-        #print out the keys of log
+            #parse strings to numbers, or filter out
+                    
+        # with output as a entry in it.
+        self.cache['output'] = self.contents['output']
 
-        #cache the log with output as a entry in it.
-        
+
     def _get(self, key):
         if self.cache == None:
             self.load()
