@@ -41,6 +41,27 @@ class RockstarApi():
 
     def getRock(self, id):
         return Rock(self.url, id)
+    
+def lenOrDot(a):
+    if a == ".":
+        return a
+    return str(len(a))
+
+def poeticNumericLiteral(text):
+    if type(text) in [int, float]:
+        return text
+    
+    num = 0
+    words=text.split(' ')
+    number = "".join(list(map(lenOrDot, words)))
+
+    if "." in number :
+        return float(number)
+    return int(number)
+
+    
+assert poeticNumericLiteral("a rolling stone") ==  175
+assert poeticNumericLiteral("a rolling . stone") ==  17.5
 
 
 class Rock():
@@ -52,12 +73,21 @@ class Rock():
         self.load()
 
     def parseOrFilter(self, item):
+        print("type(item)", type(item), item)
+
+        if(len(item) and type(item[0]) == dict):
+            valueList = list(map(lambda a : list(a.values()), item))
+            processed = list(map(self.parseOrFilter , valueList))
+            filtered = list(filter(len , processed))
+            return filtered
+
+
         if self.stringParse == RockstarApi.FILTER:
-            filtered = list(filter(lambda a : type(a) == int or (type(a) == string and a.isnumeric()), item))
+            filtered = list(filter(lambda a : type(a) == int , item))
             return filtered
 
         if self.stringParse == RockstarApi.ROCKSTAR:
-            parsed = item
+            parsed = list(map(poeticNumericLiteral , item))
             return parsed
 
         ##RockstarApi.IGNORE:
@@ -98,6 +128,7 @@ class Rock():
     def values(self):
         if self.cache == None:
             self.load()
+            print("values", self.cache)
         return self.cache
 
     def P(self, key):
@@ -110,19 +141,20 @@ class Rock():
         return pattern
 
 
-    def PBase(self, key):
+    def PBase(self, key, base):
         values = self.get(key)
         patterns = []
         # Pbase the numbers
         # if self.flatten
             # flatten
         # map to patterns
+        pattern = PBase(values, base)
+        
         return patterns
 
 rs = RockstarApi() # can take url default is "https://rockstarapi-production.up.railway.app/"
 rock=rs.getRock(0) # calls  https://rockstarapi-production.up.railway.app/rock/0 
 
-#assert rock.contents == {"papa":[175,1533],"x":[2],"my_array":[{"0":"foo"},{"0":"foo","1":"bar"},{"0":"foo","1":"bar","2":"baz"},{"0":"foo","1":"bar","2":"baz","key":"value"}], "output":["Hello World",2,"foo","bar","baz","value",3]}
 assert rock.values() == {"papa":[175,1533],"x":[2],"my_array":[], "output":[2,3]}
 
 assert rock.get("papa") ==  [175,1533]
@@ -133,7 +165,6 @@ assert rock.PBase("papa", 10) == P([1,7,5,1,5,3,3])
 rock.stringParse = RockstarApi.ROCKSTAR
 rock.load()
 
-assert rock.contents == {"papa":[175,1533],"x":[2],"my_array":[{"0":"foo"},{"0":"foo","1":"bar"},{"0":"foo","1":"bar","2":"baz"},{"0":"foo","1":"bar","2":"baz","key":"value"}], "output":["Hello World",2,"foo","bar","baz","value",3]}
 assert rock.values() == {"papa":[175,1533],"x":[2],"my_array":[[3],[3,3],[3,3,3],[3,3,3,5]], "output":[55,2,3,3,3,5,3]}
 
 assert rock.get("papa") ==  [175,1533]
