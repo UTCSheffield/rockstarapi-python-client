@@ -1,6 +1,33 @@
 from genericpath import exists
 import json
 import requests
+from FoxDot import *
+
+@loop_pattern_func
+def PBase(n, b=2, l=1):
+    ''' Returns the 'n' number in base 'b' split into digits.
+        e.g. `PBase(5)` will return `P[1,0,1]`
+        and  `PBase(5,4)` will return `P[1,1]`
+        and  `PBase(5,4,4)` will return `P[0,0,1,1]`
+    '''
+    number = 0+n
+
+    from_base10_to_anybase_num = [] # Initialize the number in any base
+    while number > 0: # Iterate while the number is greater than zero
+        remainder = int(number % b) # change remainder in integer
+        #from_base10_to_anybase_num.append( remainder )
+        from_base10_to_anybase_num.insert(0, remainder )
+        number //= b # take the integer part after division
+    
+    number_list = [int(i) for i in from_base10_to_anybase_num]
+    
+    while(len(number_list) < l):
+        number_list.insert(0, 0)
+    
+    #print("from_10_to_anybase("+str(num)+","+str(base)+")", number_list)
+    
+    return Pattern( number_list )
+
 
 class RockstarApi():
     IGNORE      = 0
@@ -25,13 +52,13 @@ class Rock():
 
     def parseOrFilter(self, item):
         if self.stringParse == RockstarApi.FILTER:
-            filtered = item
+            filtered = list(filter(lambda a : type(a) == int or (type(a) == string and a.isnumeric()), item))
             return filtered
-        
+
         if self.stringParse == RockstarApi.ROCKSTAR:
             parsed = item
             return parsed
-        
+
         ##RockstarApi.IGNORE:
         return item
 
@@ -63,10 +90,9 @@ class Rock():
         if self.cache != None and key in self.cache:
             return self.cache[key]
         return None
-
-    def P(self, key):
-        value = self._get(key)
-        return value
+    
+    def get(self, key):
+        return self._get(key)
 
     def values(self):
         if self.cache == None:
@@ -79,6 +105,7 @@ class Rock():
         # if self.flatten
             # flatten
         # map to pattern
+        pattern = P(values)
         return pattern
 
 
