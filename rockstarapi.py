@@ -3,6 +3,7 @@ import json
 import requests
 from FoxDot import *
 
+# Would Prefer to you our version of FoxDot that includes this
 @loop_pattern_func
 def PBase(n, b=2, l=1):
     ''' Returns the 'n' number in base 'b' split into digits.
