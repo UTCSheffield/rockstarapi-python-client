@@ -50,8 +50,7 @@ def lenOrDot(a):
 def poeticNumericLiteral(text):
     if type(text) in [int, float]:
         return text
-    
-    num = 0
+
     words=text.split(' ')
     number = "".join(list(map(lenOrDot, words)))
 
@@ -73,7 +72,7 @@ class Rock():
         self.load()
 
     def parseOrFilter(self, item):
-        print("type(item)", type(item), item)
+        #print("type(item)", type(item), item)
 
         if(len(item) and type(item[0]) == dict):
             valueList = list(map(lambda a : list(a.values()), item))
@@ -83,7 +82,7 @@ class Rock():
 
 
         if self.stringParse == RockstarApi.FILTER:
-            filtered = list(filter(lambda a : type(a) == int , item))
+            filtered = list(filter(lambda a : type(a) in [int, float] , item))
             return filtered
 
         if self.stringParse == RockstarApi.ROCKSTAR:
@@ -107,7 +106,7 @@ class Rock():
         for key in self.contents['log']:
             item = self.contents['log'][key]
             #print out the keys and contents of log
-            print(key, item)
+            #print(key, item)
             #parse strings to numbers, or filter out
             self.cache[key] = self.parseOrFilter(self.contents['log'][key])
 
@@ -128,7 +127,7 @@ class Rock():
     def values(self):
         if self.cache == None:
             self.load()
-            print("values", self.cache)
+            #print("values", self.cache)
         return self.cache
 
     def P(self, key):
