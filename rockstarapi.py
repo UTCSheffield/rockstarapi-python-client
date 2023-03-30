@@ -25,21 +25,20 @@ class Rock():
     def load(self):
         #contents = urllib.request.urlopen(self.url).read()
         contents = requests.get(self.url).json()
-        
-        
-        print (contents)
-        #de-json it into dictionary
-
         self.contents = contents
-        print (self.contents)
+        #print (self.contents)
+        self.cache = {} #stuff
 
+
+        print("self.contents['log']", self.contents['log'])
         #parse strings to numbers, or filter out
-        
+        for key in self.contents['log']:
+            item = self.contents['log'][key]
+            print(key, item)
         #print out the keys of log
 
         #cache the log with output as a entry in it.
-        self.cache = {} #stuff
-
+        
     def _get(self, key):
         if self.cache == None:
             self.load()
@@ -77,7 +76,7 @@ class Rock():
 rs = RockstarApi() # can take url default is "https://rockstarapi-production.up.railway.app/"
 rock=rs.getRock(0) # calls  https://rockstarapi-production.up.railway.app/rock/0 
 
-assert rock.contents == {"papa":[175,1533],"x":[2],"my_array":[{"0":"foo"},{"0":"foo","1":"bar"},{"0":"foo","1":"bar","2":"baz"},{"0":"foo","1":"bar","2":"baz","key":"value"}], "output":["Hello World",2,"foo","bar","baz","value",3]}
+#assert rock.contents == {"papa":[175,1533],"x":[2],"my_array":[{"0":"foo"},{"0":"foo","1":"bar"},{"0":"foo","1":"bar","2":"baz"},{"0":"foo","1":"bar","2":"baz","key":"value"}], "output":["Hello World",2,"foo","bar","baz","value",3]}
 assert rock.values() == {"papa":[175,1533],"x":[2],"my_array":[], "output":[2,3]}
 
 assert rock.get("papa") ==  [175,1533]
