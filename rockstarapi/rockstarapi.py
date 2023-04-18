@@ -145,7 +145,7 @@ class Rock():
         # if self.flatten
             # flatten
         # map to pattern
-        pattern = P(values)
+        pattern = P(list(values))
         return pattern
 
 
