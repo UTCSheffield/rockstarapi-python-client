@@ -116,6 +116,9 @@ class Rock():
 
         print("Loaded Rock",self.id, "with",self.stringParse ,"available keys = ", list(self.cache.keys()))
 
+    def __str__(self):
+        return "Rock "+str(self.id)+ " with "+self.stringParse +" available keys = "+ repr(list(self.cache.keys()))
+
     def _get(self, key):
         if self.cache == None:
             self.load()

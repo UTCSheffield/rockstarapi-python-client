@@ -19,6 +19,8 @@ def test_rock_default(rockzero):
 def test_rock_p(rockzero):
     assert rockzero.P("papa") ==  P[175,1533]
 
+def test_rock_str(rockzero):
+    assert str(rockzero) == "Rock 0 with ROCKSTAR available keys = ['papa', 'x', 'my_array', 'output']"
 
 def test_rock_pbase(rockzero):
     assert rockzero.PBase("papa", 10) ==  P[P[1,7,5],P[1,5,3,3]]
