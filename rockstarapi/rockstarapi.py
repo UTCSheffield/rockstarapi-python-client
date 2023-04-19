@@ -74,8 +74,6 @@ class Rock():
         self.load()
 
     def parseOrFilter(self, item):
-        #print("type(item)", type(item), item)
-
         if(len(item) and type(item[0]) == dict):
             valueList = list(map(lambda a : list(a.values()), item))
             processed = list(map(self.parseOrFilter , valueList))
@@ -88,7 +86,8 @@ class Rock():
             return filtered
 
         if self.stringParse == RockstarApi.ROCKSTAR:
-            parsed = list(map(poeticNumericLiteral , item))
+            filtered = list(filter(lambda a : type(a) in [str, int, float] , item))
+            parsed = list(map(poeticNumericLiteral , filtered))
             return parsed
 
         ##RockstarApi.IGNORE:
@@ -98,17 +97,12 @@ class Rock():
         #contents = urllib.request.urlopen(self.url).read()
         contents = requests.get(self.url).json()
         self.contents = contents
-        #print (self.contents)
         self.cache = {} #stuff
 
         #print("self.contents['log']", self.contents['log'])
-        #cache the log 
         
         for key in self.contents['log']:
             item = self.contents['log'][key]
-            #print out the keys and contents of log
-            #print(key, item)
-            #parse strings to numbers, or filter out
             self.cache[key] = self.parseOrFilter(self.contents['log'][key])
 
         # with output as a entry in it.
@@ -120,7 +114,6 @@ class Rock():
         if self.cache == None:
             self.load()
         if self.cache != None and key in self.cache:
-            print("_getting", key, self.cache[key])
             return self.cache[key]
         return None
     
@@ -130,11 +123,9 @@ class Rock():
     def values(self):
         if self.cache == None:
             self.load()
-            #print("values", self.cache)
         return self.cache
 
     def _P(self, values):
-        print("_P values", values)
         if type(values) == list:
             if(len(values) and type(values[0]) == list):
                 return PGroup(map(lambda a : self._P(a), values))
@@ -150,7 +141,6 @@ class Rock():
         return returned
     
     def _PBase(self, values, base=10, l=1):
-        print("_PBase values", values)
         if type(values) == list:
             if(len(values) and type(values[0]) == list):
                 return P[list(map(lambda a : self._PBase(a, base, l), values))]
