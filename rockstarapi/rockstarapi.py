@@ -64,11 +64,6 @@ def poeticNumericLiteral(text):
         return float(number)
     return int(number)
 
-    
-assert poeticNumericLiteral("a rolling stone") ==  175
-assert poeticNumericLiteral("a rolling . stone") ==  17.5
-
-
 class Rock():
     cache   = None
     stringParse = RockstarApi.ROCKSTAR
@@ -88,7 +83,6 @@ class Rock():
             filtered = list(filter(len , processed))
             return filtered
 
-
         if self.stringParse == RockstarApi.FILTER:
             filtered = list(filter(lambda a : type(a) in [int, float] , item))
             return filtered
@@ -106,7 +100,6 @@ class Rock():
         self.contents = contents
         #print (self.contents)
         self.cache = {} #stuff
-
 
         #print("self.contents['log']", self.contents['log'])
         #cache the log 
@@ -127,6 +120,7 @@ class Rock():
         if self.cache == None:
             self.load()
         if self.cache != None and key in self.cache:
+            print("_getting", key, self.cache[key])
             return self.cache[key]
         return None
     
@@ -139,50 +133,34 @@ class Rock():
             #print("values", self.cache)
         return self.cache
 
+    def _P(self, values):
+        print("_P values", values)
+        if type(values) == list:
+            if(len(values) and type(values[0]) == list):
+                return PGroup(map(lambda a : self._P(a), values))
+            else:
+                return P[values]
+        else:
+            return P(values)
+
     def P(self, key):
         values = self.get(key)
-        pattern = []
-        # if self.flatten
-            # flatten
-        # map to pattern
-        pattern = P(list(values))
-        return pattern
-
+        returned =  self._P(values)
+        print("returned", returned)
+        return returned
+    
+    def _PBase(self, values, base=10, l=1):
+        print("_PBase values", values)
+        if type(values) == list:
+            if(len(values) and type(values[0]) == list):
+                return P[list(map(lambda a : self._PBase(a, base, l), values))]
+            else:
+                return P[list(map(lambda a : PBase(a, base, l), values))]
+        else:
+            return PBase(values, base, l)
 
     def PBase(self, key, base=10, l=1):
         values = self.get(key)
-        patterns = []
-        # Pbase the numbers
-        # if self.flatten
-            # flatten
-        # map to patterns
-        pattern = PBase(values, base, l)
-        
-        return patterns
-
-rs = RockstarApi() # can take url default is "https://rockstarapi-production.up.railway.app/"
-rock=rs.getRock(0) # calls  https://rockstarapi-production.up.railway.app/rock/0 
-
-assert rock.PBase("papa", 10) == P([1,7,5,1,5,3,3])
-assert rock.values() == {"papa":[175,1533],"x":[2],"my_array":[[3],[3,3],[3,3,3],[3,3,3,5]], "output":[55,2,3,3,3,5,3]}
-
-assert rock.get("papa") ==  [175,1533]
-assert rock.P("papa") ==  P([175,1533])
-assert rock.PBase("papa", 10) == P([1,7,5,1,5,3,3])
-assert rock.PBase("papa", 10,8) == P([0,1,7,5,1,5,3,3])
-
-rock.stringParse = RockstarApi.FILTER
-rock.load()
-assert rock.values() == {"papa":[175,1533],"x":[2],"my_array":[], "output":[2,3]}
-
-assert rock.get("papa") ==  [175,1533]
-assert rock.P("papa") ==  P([175,1533])
-assert rock.PBase("papa", 10) == P([1,7,5,1,5,3,3])
-
-rock.stringParse = RockstarApi.IGNORE
-rock.load()
-assert rock.values() == {'papa': [175, 1533], 'x': [2], 'my_array': [['foo'], ['foo', 'bar'], ['foo', 'bar', 'baz'], ['foo', 'bar', 'baz', 'value']], 'output': ['Hello World', 2, 'foo', 'bar', 'baz', 'value', 3]}
-
-assert rock.get("papa") ==  [175,1533]
-assert rock.P("papa") ==  P([175,1533])
-assert rock.PBase("papa", 10) == P([1,7,5,1,5,3,3])
+        returned =  self._PBase(values, base, l)
+        print("PBase returned", returned)
+        return returned
