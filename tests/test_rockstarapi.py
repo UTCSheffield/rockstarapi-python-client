@@ -5,7 +5,7 @@ from FoxDot import *
 @pytest.fixture
 def rockzero():
     rs = RockstarApi() # can take url default is "https://rockstarapi-production.up.railway.app/"
-    rock=rs.getRock(0) # calls  https://rockstarapi-production.up.railway.app/rock/0 
+    rock=rs.getRock(0, debug=True) # calls  https://rockstarapi-production.up.railway.app/rock/0 
     return rock
 
 def test_poeticNumericLiteral():
@@ -27,7 +27,7 @@ def test_rock_pbase(rockzero):
 def test_rock_filter(rockzero):
     rockzero.stringParse = RockstarApi.FILTER
     rockzero.load()
-    assert rockzero.values() == {"papa":[175,1533],"x":[2],"my_array":[], "output":[2,3]}
+    assert rockzero.values() == {"papa":[175,1533],"x":[2], "output":[2,3]}
 
     assert rockzero.get("papa") ==  [175,1533]
     assert rockzero.P("papa") ==  P[175,1533]

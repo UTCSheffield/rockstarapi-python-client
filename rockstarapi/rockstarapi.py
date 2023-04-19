@@ -45,8 +45,9 @@ class RockstarApi():
         self.url = url
         
 
-    def getRock(self, id):
-        return Rock(self.url, id)
+    def getRock(self, id, stringParse = "ROCKSTAR", debug = False):
+        rock = Rock(self.url, id, stringParse = stringParse, debug = debug)
+        return rock
     
 def lenOrDot(a):
     if a == ".":
@@ -67,10 +68,12 @@ def poeticNumericLiteral(text):
 class Rock():
     cache   = None
     stringParse = RockstarApi.ROCKSTAR
-    flatten = True
-    def __init__(self, url, id):
+    debug = False
+    def __init__(self, url, id, stringParse = RockstarApi.ROCKSTAR, debug = False):
         self.id = id
         self.url = url+"rock/"+str(id)
+        self.stringParse = stringParse
+        self.debug = debug
         self.load()
 
     def parseOrFilter(self, item):
@@ -103,11 +106,14 @@ class Rock():
         
         for key in self.contents['log']:
             item = self.contents['log'][key]
-            self.cache[key] = self.parseOrFilter(self.contents['log'][key])
+            filtered = self.parseOrFilter(self.contents['log'][key])
+            if len(filtered):
+                self.cache[key] = filtered
 
         # with output as a entry in it.
-        self.cache['output'] = self.parseOrFilter(self.contents['output'])
- 
+        filtered = self.parseOrFilter(self.contents['output'])
+        self.cache['output'] = filtered
+
         print("Loaded Rock",self.id, "with",self.stringParse ,"available keys = ", list(self.cache.keys()))
 
     def _get(self, key):
@@ -137,7 +143,8 @@ class Rock():
     def P(self, key):
         values = self.get(key)
         returned =  self._P(values)
-        print("returned", returned)
+        if self.debug:
+            print(returned)
         return returned
     
     def _PBase(self, values, base=10, l=1):
@@ -152,5 +159,6 @@ class Rock():
     def PBase(self, key, base=10, l=1):
         values = self.get(key)
         returned =  self._PBase(values, base, l)
-        print("PBase returned", returned)
+        if self.debug:
+            print(returned)
         return returned
